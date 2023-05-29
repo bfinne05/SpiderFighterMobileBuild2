@@ -66,7 +66,7 @@ public class PlayerController : MonoBehaviour
 	public void CreateTank()
 	{
 		TankRB = Instantiate(Tank).GetComponent<Rigidbody>();
-		TankCollider = TankRB.GetComponent<CapsuleCollider>();
+		TankCollider = TankRB.GetComponent<SphereCollider>();
 		TankCollider.enabled = false;
 		TankRB.isKinematic = true;
 	}
