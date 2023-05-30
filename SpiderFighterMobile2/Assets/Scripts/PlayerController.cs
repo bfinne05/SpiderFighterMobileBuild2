@@ -15,10 +15,13 @@ public class PlayerController : MonoBehaviour
 
 	public float maxLength;
 	public float TankPositionOffset;
+	bool SetGameOver = false;
 
 	public GameObject Tank;
 	private Rigidbody TankRB;
 	private Collider TankCollider;
+
+	public int TankShots = 10;
 
 	public float Tankforce;
 
@@ -40,7 +43,12 @@ public class PlayerController : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (isMouseDown)
+		//call game over
+		if(TankShots <= 0)
+		{
+			Invoke("GameOver", 10);
+		}
+		if (isMouseDown && TankShots > 0)
 		{
 			Vector3 mousePosition = Input.mousePosition;
 			mousePosition.z = 0;
@@ -63,6 +71,12 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	public void GameOver()
+	{
+		SetGameOver = true;
+		Debug.Log("Game Over");
+	}
+
 	public void CreateTank()
 	{
 		TankRB = Instantiate(Tank).GetComponent<Rigidbody>();
@@ -80,6 +94,8 @@ public class PlayerController : MonoBehaviour
 	{
 		isMouseDown = false;
 		shoot();
+		TankShots -= 1;
+		Debug.Log("Shots left: " + TankShots);
 	}
 
 	void shoot()
