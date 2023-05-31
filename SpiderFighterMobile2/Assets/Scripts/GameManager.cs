@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
                 break;
             case State.START_GAME:
                 titleUI.SetActive(false);
-                pc.TankShots = 1;
+                pc.TankShots = 5;
                 score = 0;
                 timer = 0;
                 state = State.PLAY_GAME;
