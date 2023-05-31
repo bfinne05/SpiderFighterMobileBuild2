@@ -41,7 +41,6 @@ public class GameManager : MonoBehaviour
     {
         pc = FindObjectOfType<PlayerController>();
         timer = 0;
-        score = 0;
         timer += initialTime;
 
         //int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
@@ -61,10 +60,12 @@ public class GameManager : MonoBehaviour
                 //gameMusic.Play();
                 state = State.PLAY_GAME;
                 pc.TankShots = 5;
+                score = 0;
                 break;
             case State.PLAY_GAME:
                 timer += Time.deltaTime;
                 timerText.SetText("Time: " + timer.ToString("0.00"));
+                scoreUI.SetText("Score: " + score.ToString("0"));
                 shotText.SetText("Tanks Left: " + pc.TankShots.ToString());
                 if (pc.TankShots <= -1 && score > 2500)
                 {
