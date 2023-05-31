@@ -69,11 +69,11 @@ public class GameManager : MonoBehaviour
                 timerText.SetText("Time: " + timer.ToString("0.00"));
                 scoreUI.SetText("Score: " + score.ToString("0"));
                 shotText.SetText("Tanks Left: " + pc.TankShots.ToString());
-                if (pc.TankShots <= -1 && score > 2500)
+                if (pc.TankShots <= -1 && score > 3000)
                 {
                     SetWin();
                 }
-                if (pc.TankShots <= -1 && score < 2500)
+                if (pc.TankShots <= -1 && score < 3000)
                 {
                     SetLose();
                 }
