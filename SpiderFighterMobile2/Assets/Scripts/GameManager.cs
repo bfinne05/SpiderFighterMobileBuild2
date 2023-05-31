@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
                 titleUI.SetActive(false);
                 //gameMusic.Play();
                 state = State.PLAY_GAME;
-                pc.TankShots = 10;
+                pc.TankShots = 5;
                 break;
             case State.PLAY_GAME:
                 timer += Time.deltaTime;
@@ -126,5 +126,11 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         state = State.START_GAME;
+    }
+
+    public void SetScore(float points)
+    {
+        score += points;
+        scoreUI.text = "Score: " + score.ToString();
     }
 }
