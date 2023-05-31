@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI totalTimeLoseText;
     [SerializeField] TextMeshProUGUI totalScoreWinText;
     [SerializeField] TextMeshProUGUI totalScoreLoseText;
+    [SerializeField] AudioSource gameMusic;
     [SerializeField] GameObject towerMainPrefab;
 
     public enum State
@@ -49,12 +50,14 @@ public class GameManager : MonoBehaviour
         switch (state)
         {
             case State.TITLE:
+                gameMusic.Stop();
                 pc.ResetGameOver();
                 titleUI.SetActive(true);
                 break;
             case State.START_GAME:
                 titleUI.SetActive(false);
                 pc.TankShots = 5;
+                gameMusic.Play();
                 score = 0;
                 timer = 0;
                 state = State.PLAY_GAME;
