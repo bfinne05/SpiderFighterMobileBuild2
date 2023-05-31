@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     public GameObject Tank;
     private Rigidbody TankRB;
     private Collider TankCollider;
+    private TankDestroyer tankDestroyer;
 
     public int TankShots { get; set; } = 10;
 
@@ -89,10 +90,12 @@ public class PlayerController : MonoBehaviour
 
     public void CreateTank()
     {
-        TankRB = Instantiate(Tank).GetComponent<Rigidbody>();
+        Tank = Instantiate(Tank);
+		TankRB = Tank.GetComponent<Rigidbody>();
         TankCollider = TankRB.GetComponent<BoxCollider>();
         TankCollider.enabled = false;
         TankRB.isKinematic = true;
+        tankDestroyer = Tank.GetComponent<TankDestroyer>();
     }
 
     private void OnMouseDown()
@@ -120,8 +123,10 @@ public class PlayerController : MonoBehaviour
             TankRB = null;
             TankCollider = null;
 
-            Invoke("CreateTank", 2);
+            tankDestroyer.DestroyTank();
+            Invoke("CreateTank", 5);
             Invoke("ChangeCameraIdle", 5);
+
         }
     }
 
