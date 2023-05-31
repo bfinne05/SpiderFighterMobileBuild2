@@ -116,10 +116,11 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        GameObject towerMain = GameObject.Find("TowerMain");
-        if (towerMain != null)
+
+        Tower tower = FindObjectOfType<Tower>();
+        if (tower != null)
         {
-            Destroy(towerMain);
+            Destroy(tower.gameObject);
         }
         GameObject towerSpawn = GameObject.Find("TowerSpawn");
 

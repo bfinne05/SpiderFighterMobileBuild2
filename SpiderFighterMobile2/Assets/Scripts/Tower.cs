@@ -4,18 +4,5 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    [SerializeField] GameManager ;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (gameManage)
-
-
-    }
+    //This is just a locator Class
 }
