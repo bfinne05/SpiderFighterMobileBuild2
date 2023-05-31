@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI totalScoreWinText;
     [SerializeField] TextMeshProUGUI totalScoreLoseText;
 
+    [SerializeField] GameObject towerMainPrefab;
+
     public enum State
     {
         TITLE,
@@ -124,10 +126,25 @@ public class GameManager : MonoBehaviour
         totalScoreLoseText.SetText("Final Score: " + score.ToString());
     }
 
+
     public void StartGame()
     {
+        GameObject towerMain = GameObject.Find("TowerMain");
+        if (towerMain != null)
+        {
+            Destroy(towerMain);
+        }
+        GameObject towerSpawn = GameObject.Find("TowerSpawn");
+
+        if (towerMainPrefab != null)
+        {
+            Instantiate(towerMainPrefab, towerSpawn.transform.position, towerSpawn.transform.rotation);
+        }
+
         state = State.START_GAME;
     }
+
+
 
     public void SetScore(float points)
     {
