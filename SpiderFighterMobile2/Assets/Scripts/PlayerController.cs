@@ -10,6 +10,9 @@ public class PlayerController : MonoBehaviour
 	public Transform center;
 	public Transform idlePosition;
 
+	public Transform idleCamera;
+	public Transform TankFireCamera;
+
 	public Vector3 CurrentPosition;
 	public float BottomBoundary;
 
@@ -53,7 +56,7 @@ public class PlayerController : MonoBehaviour
 			Vector3 mousePosition = Input.mousePosition;
 			mousePosition.z = 0;
 
-			CurrentPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+			CurrentPosition = Camera.main.ViewportToScreenPoint(mousePosition); //ScreenToWorldPoint(mousePosition);
 			CurrentPosition = center.position + Vector3.ClampMagnitude(CurrentPosition - center.position, maxLength);
 
 			CurrentPosition = ClampBoundary(CurrentPosition);
@@ -79,10 +82,11 @@ public class PlayerController : MonoBehaviour
 
 	public void CreateTank()
 	{
-		TankRB = Instantiate(Tank).GetComponent<Rigidbody>();
-		TankCollider = TankRB.GetComponent<SphereCollider>();
-		TankCollider.enabled = false;
-		TankRB.isKinematic = true;
+			TankRB = Instantiate(Tank).GetComponent<Rigidbody>();
+			TankCollider = TankRB.GetComponent<BoxCollider>();
+			TankCollider.enabled = false;
+			TankRB.isKinematic = true;
+		    
 	}
 
 	private void OnMouseDown()
@@ -100,15 +104,20 @@ public class PlayerController : MonoBehaviour
 
 	void shoot()
 	{
-		TankRB.isKinematic = false;
-		Vector3 Force = (CurrentPosition - center.position) * Tankforce * -1;
+		ChangeCameraMobile();
+		if(Tank)
+		{
+			TankRB.isKinematic = false;
+			Vector3 Force = (CurrentPosition - center.position) * Tankforce * -1;
 
-		TankRB.velocity = Force;
+			TankRB.velocity = Force;
 
-		TankRB = null;
-		TankCollider = null;
+			TankRB = null;
+			TankCollider = null;
 
-		Invoke("CreateTank", 2);
+			Invoke("CreateTank", 2);
+			Invoke("ChangeCameraIdle", 5);
+		}
 	}
 
 	public void ResetLine()
@@ -128,6 +137,18 @@ public class PlayerController : MonoBehaviour
 			TankRB.transform.position = position + direction.normalized * TankPositionOffset;
 			TankRB.transform.right = -direction.normalized;
 		}
+	}
+
+	public void ChangeCameraMobile()
+	{
+		Camera.main.transform.position = idleCamera.transform.position;
+		Debug.Log("CameraMobile");
+	}
+
+	public void ChangeCameraIdle()
+	{
+		Camera.main.transform.position = idleCamera.transform.position;
+		Debug.Log("CameraIdle");
 	}
 
 	Vector3 ClampBoundary(Vector3 Position)
