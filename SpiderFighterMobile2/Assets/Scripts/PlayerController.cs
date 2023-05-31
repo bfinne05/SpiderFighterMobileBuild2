@@ -5,155 +5,162 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-	public LineRenderer[] lineRenderers;
-	public Transform[] linePositions;
-	public Transform center;
-	public Transform idlePosition;
+    public LineRenderer[] lineRenderers;
+    public Transform[] linePositions;
+    public Transform center;
+    public Transform idlePosition;
 
-	public Transform idleCamera;
-	public Transform TankFireCamera;
+    public Transform idleCamera;
+    public Transform TankFireCamera;
 
-	public Vector3 CurrentPosition;
-	public float BottomBoundary;
+    public Vector3 CurrentPosition;
+    public float BottomBoundary;
 
-	public float maxLength;
-	public float TankPositionOffset;
-	bool SetGameOver = false;
+    public float maxLength;
+    public float TankPositionOffset;
+    bool SetGameOver = false;
 
-	public GameObject Tank;
-	private Rigidbody TankRB;
-	private Collider TankCollider;
+    public GameObject Tank;
+    private Rigidbody TankRB;
+    private Collider TankCollider;
 
-	public int TankShots { get; set; } = 10;
+    public int TankShots { get; set; } = 10;
 
     public float Tankforce;
 
-	bool isMouseDown = false;
+    bool isMouseDown = false;
 
-	// Start is called before the first frame update
-	void Start()
-	{
-		lineRenderers[0].positionCount = 2;
-		lineRenderers[1].positionCount = 2;
+    // Camera variables
+    private Camera mainCamera;
+    private Vector3 cameraOffset;
 
-		//set line position of the string
-		lineRenderers[0].SetPosition(0, linePositions[0].position);
-		lineRenderers[1].SetPosition(0, linePositions[1].position);
+    // Start is called before the first frame update
+    void Start()
+    {
+        lineRenderers[0].positionCount = 2;
+        lineRenderers[1].positionCount = 2;
 
-		CreateTank();
-	}
+        // Set line position of the string
+        lineRenderers[0].SetPosition(0, linePositions[0].position);
+        lineRenderers[1].SetPosition(0, linePositions[1].position);
 
-	// Update is called once per frame
-	void Update()
-	{
-		//call game over
-		if(TankShots <= 0)
-		{
-			Invoke("GameOver", 10);
-		}
-		if (isMouseDown && TankShots > 0)
-		{
-			Vector3 mousePosition = Input.mousePosition;
-			mousePosition.z = 0;
+        // Initialize tank and camera
+        CreateTank();
+        mainCamera = Camera.main;
+        cameraOffset = mainCamera.transform.position - Tank.transform.position;
+    }
 
-			CurrentPosition = Camera.main.ViewportToScreenPoint(mousePosition); //ScreenToWorldPoint(mousePosition);
-			CurrentPosition = center.position + Vector3.ClampMagnitude(CurrentPosition - center.position, maxLength);
+    // Update is called once per frame
+    void Update()
+    {
+        // Call game over
+        if (TankShots <= 0)
+        {
+            Invoke("GameOver", 10);
+        }
+        if (isMouseDown && TankShots > 0)
+        {
+            Vector3 mousePosition = Input.mousePosition;
+            mousePosition.z = 0;
 
-			CurrentPosition = ClampBoundary(CurrentPosition);
+            CurrentPosition = Camera.main.ViewportToScreenPoint(mousePosition);
+            CurrentPosition = center.position + Vector3.ClampMagnitude(CurrentPosition - center.position, maxLength);
 
-			setLines(CurrentPosition);
+            CurrentPosition = ClampBoundary(CurrentPosition);
 
-			if (TankCollider)
-			{
-				TankCollider.enabled = true;
-			}
-		}
-		else
-		{
-			ResetLine();
-		}
-	}
+            setLines(CurrentPosition);
 
-	public void GameOver()
-	{
-		SetGameOver = true;
-		Debug.Log("Game Over");
-	}
+            if (TankCollider)
+            {
+                TankCollider.enabled = true;
+            }
+        }
+        else
+        {
+            ResetLine();
+        }
+    }
 
-	public void CreateTank()
-	{
-			TankRB = Instantiate(Tank).GetComponent<Rigidbody>();
-			TankCollider = TankRB.GetComponent<BoxCollider>();
-			TankCollider.enabled = false;
-			TankRB.isKinematic = true;
-		    
-	}
+    public void GameOver()
+    {
+        SetGameOver = true;
+        Debug.Log("Game Over");
+    }
 
-	private void OnMouseDown()
-	{
-		isMouseDown = true;
-	}
+    public void CreateTank()
+    {
+        TankRB = Instantiate(Tank).GetComponent<Rigidbody>();
+        TankCollider = TankRB.GetComponent<BoxCollider>();
+        TankCollider.enabled = false;
+        TankRB.isKinematic = true;
+    }
 
-	public void OnMouseUp()
-	{
-		isMouseDown = false;
-		shoot();
-		TankShots -= 1;
-		//Debug.Log("Shots left: " + TankShots);
-	}
+    private void OnMouseDown()
+    {
+        isMouseDown = true;
+    }
 
-	void shoot()
-	{
-		ChangeCameraMobile();
-		if(Tank)
-		{
-			TankRB.isKinematic = false;
-			Vector3 Force = (CurrentPosition - center.position) * Tankforce * -1;
+    public void OnMouseUp()
+    {
+        isMouseDown = false;
+        shoot();
+        TankShots -= 1;
+    }
 
-			TankRB.velocity = Force;
+    void shoot()
+    {
+        ChangeCameraMobile();
+        if (Tank)
+        {
+            TankRB.isKinematic = false;
+            Vector3 Force = (CurrentPosition - center.position) * Tankforce * -1;
 
-			TankRB = null;
-			TankCollider = null;
+            TankRB.velocity = Force;
 
-			Invoke("CreateTank", 2);
-			Invoke("ChangeCameraIdle", 5);
-		}
-	}
+            TankRB = null;
+            TankCollider = null;
 
-	public void ResetLine()
-	{
-		CurrentPosition = idlePosition.position;
-		setLines(CurrentPosition);
-	}
+            Invoke("CreateTank", 2);
+            Invoke("ChangeCameraIdle", 5);
+        }
+    }
 
-	public void setLines(Vector3 position)
-	{
-		lineRenderers[0].SetPosition(1, position);
-		lineRenderers[1].SetPosition(1, position);
+    public void ResetLine()
+    {
+        CurrentPosition = idlePosition.position;
+        setLines(CurrentPosition);
+    }
 
-		if (TankRB)
-		{
-			Vector3 direction = position - center.position;
-			TankRB.transform.position = position + direction.normalized * TankPositionOffset;
-			TankRB.transform.right = -direction.normalized;
-		}
-	}
+    public void setLines(Vector3 position)
+    {
+        lineRenderers[0].SetPosition(1, position);
+        lineRenderers[1].SetPosition(1, position);
 
-	public void ChangeCameraMobile()
-	{
-		Camera.main.transform.position = idleCamera.transform.position;
-		Debug.Log("CameraMobile");
-	}
+        if (TankRB)
+        {
+            Vector3 direction = position - center.position;
+            TankRB.transform.position = position + direction.normalized * TankPositionOffset;
+            TankRB.transform.right = -direction.normalized;
+        }
+    }
 
-	public void ChangeCameraIdle()
-	{
-		Camera.main.transform.position = idleCamera.transform.position;
-		Debug.Log("CameraIdle");
-	}
+    public void ChangeCameraMobile()
+    {
+        mainCamera.transform.position = TankFireCamera.transform.position;
+        mainCamera.transform.rotation = TankFireCamera.transform.rotation;
+        Debug.Log("CameraMobile");
+    }
 
-	Vector3 ClampBoundary(Vector3 Position)
-	{
-		Position.y = Mathf.Clamp(Position.y, BottomBoundary, 4000);
-		return Position;
-	}
+    public void ChangeCameraIdle()
+    {
+        mainCamera.transform.position = idleCamera.transform.position;
+        mainCamera.transform.rotation = idleCamera.transform.rotation;
+        Debug.Log("CameraIdle");
+    }
+
+    Vector3 ClampBoundary(Vector3 Position)
+    {
+        Position.y = Mathf.Clamp(Position.y, BottomBoundary, 4000);
+        return Position;
+    }
 }
