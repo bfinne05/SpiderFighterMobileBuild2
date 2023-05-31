@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
 	private Rigidbody TankRB;
 	private Collider TankCollider;
 
-	public int TankShots { get; private set; } = 10;
+	public int TankShots { get; set; } = 10;
 
     public float Tankforce;
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI scoreUI;
     [SerializeField] TextMeshProUGUI totalTimeWinText;
     [SerializeField] TextMeshProUGUI totalTimeLoseText;
+    [SerializeField] TextMeshProUGUI totalScoreWinText;
+    [SerializeField] TextMeshProUGUI totalScoreLoseText;
 
     public enum State
     {
@@ -32,12 +35,17 @@ public class GameManager : MonoBehaviour
     float stateTimer = 0;
     public float timer = 0;
     float initialTime = 0;
+    float score = 0;
 
     private void Start()
     {
         pc = FindObjectOfType<PlayerController>();
         timer = 0;
+        score = 0;
         timer += initialTime;
+
+        //int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        //SceneManager.LoadScene(currentSceneIndex);
     }
 
     public void Update()
@@ -52,11 +60,20 @@ public class GameManager : MonoBehaviour
                 titleUI.SetActive(false);
                 //gameMusic.Play();
                 state = State.PLAY_GAME;
+                pc.TankShots = 10;
                 break;
             case State.PLAY_GAME:
                 timer += Time.deltaTime;
                 timerText.SetText("Time: " + timer.ToString("0.00"));
                 shotText.SetText("Tanks Left: " + pc.TankShots.ToString());
+                if (pc.TankShots <= -1 && score > 2500)
+                {
+                    SetWin();
+                }
+                if (pc.TankShots <= -1 && score < 2500)
+                {
+                    SetLose();
+                }
                 break;
             case State.GAME_WIN:
                 timer = 0;
@@ -91,6 +108,7 @@ public class GameManager : MonoBehaviour
 
         // Show total time in the win UI
         totalTimeWinText.SetText("Total Time: " + timer.ToString("0.00"));
+        totalScoreWinText.SetText("Final Score: " + score.ToString());
     }
 
     public void SetLose()
@@ -102,6 +120,7 @@ public class GameManager : MonoBehaviour
 
         // Show total time in the Lose UI
         totalTimeLoseText.SetText("Total Time: " + timer.ToString("0.00"));
+        totalScoreLoseText.SetText("Final Score: " + score.ToString());
     }
 
     public void StartGame()
