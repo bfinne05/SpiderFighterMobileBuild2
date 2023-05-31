@@ -55,10 +55,11 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         // Call game over
-        if (TankShots <= 0)
+        if (TankShots <= 0 && !SetGameOver)
         {
-            Invoke("GameOver", 10);
+            Invoke("GameOver", 5);
         }
+
         if (isMouseDown && TankShots > 0)
         {
             Vector3 mousePosition = Input.mousePosition;
@@ -85,17 +86,22 @@ public class PlayerController : MonoBehaviour
     public void GameOver()
     {
         SetGameOver = true;
-        Debug.Log("Game Over");
+    }
+
+    public void ResetGameOver()
+    {
+        TankShots = 5;
+        SetGameOver = false;
     }
 
     public void CreateTank()
     {
-        Tank = Instantiate(Tank);
-		TankRB = Tank.GetComponent<Rigidbody>();
-        TankCollider = TankRB.GetComponent<BoxCollider>();
-        TankCollider.enabled = false;
-        TankRB.isKinematic = true;
-        tankDestroyer = Tank.GetComponent<TankDestroyer>();
+		    Tank = Instantiate(Tank);
+		    TankRB = Tank.GetComponent<Rigidbody>();
+            TankCollider = TankRB.GetComponent<BoxCollider>();
+            TankCollider.enabled = false;
+            TankRB.isKinematic = true;
+            tankDestroyer = Tank.GetComponent<TankDestroyer>();
     }
 
     private void OnMouseDown()
@@ -106,8 +112,11 @@ public class PlayerController : MonoBehaviour
     public void OnMouseUp()
     {
         isMouseDown = false;
-        shoot();
-        TankShots -= 1;
+        if(TankShots > 0)
+        {
+            shoot();
+            TankShots -= 1;
+        }
     }
 
     void shoot()
@@ -167,5 +176,10 @@ public class PlayerController : MonoBehaviour
     {
         Position.y = Mathf.Clamp(Position.y, BottomBoundary, 4000);
         return Position;
+    }
+
+    public bool GetGameOver()
+    {
+        return SetGameOver;
     }
 }
