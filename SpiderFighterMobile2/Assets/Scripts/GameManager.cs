@@ -6,11 +6,14 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    PlayerController pc = new PlayerController();
+
     [SerializeField] GameObject titleUI;
     [SerializeField] GameObject gameWinUI;
     [SerializeField] GameObject gameLoseUI;
     [SerializeField] GameObject controlsUI;
     [SerializeField] TextMeshProUGUI timerText;
+    [SerializeField] TextMeshProUGUI shotText;
     //[SerializeField] AudioSource gameMusic;
     [SerializeField] TextMeshProUGUI scoreUI;
     [SerializeField] TextMeshProUGUI totalTimeWinText;
@@ -32,6 +35,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        pc = FindObjectOfType<PlayerController>();
         timer = 0;
         timer += initialTime;
     }
@@ -52,6 +56,7 @@ public class GameManager : MonoBehaviour
             case State.PLAY_GAME:
                 timer += Time.deltaTime;
                 timerText.SetText("Time: " + timer.ToString("0.00"));
+                shotText.SetText("Tanks Left: " + pc.TankShots.ToString());
                 break;
             case State.GAME_WIN:
                 timer = 0;

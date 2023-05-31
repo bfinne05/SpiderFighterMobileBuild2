@@ -24,9 +24,9 @@ public class PlayerController : MonoBehaviour
 	private Rigidbody TankRB;
 	private Collider TankCollider;
 
-	public int TankShots = 10;
+	public int TankShots { get; private set; } = 10;
 
-	public float Tankforce;
+    public float Tankforce;
 
 	bool isMouseDown = false;
 
@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour
 		isMouseDown = false;
 		shoot();
 		TankShots -= 1;
-		Debug.Log("Shots left: " + TankShots);
+		//Debug.Log("Shots left: " + TankShots);
 	}
 
 	void shoot()
